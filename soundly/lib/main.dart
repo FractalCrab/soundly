@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:soundly/feed.dart';
-import 'package:soundly/auth.dart';
+import 'package:soundly/screens/feed.dart';
+import 'package:soundly/screens/auth.dart';
 
 void main() {
   runApp(MyApp());
