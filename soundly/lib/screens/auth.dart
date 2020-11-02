@@ -1,4 +1,6 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:soundly/screens/feed.dart';
 
 class AuthPage extends StatefulWidget {
   @override
@@ -131,9 +133,10 @@ class _LoginState extends State<Login> {
                                 child: FloatingActionButton(
                                   backgroundColor: Colors.greenAccent,
                                   onPressed: () {
-                                    if (formKey.currentState.validate()) {
-                                      //logged in navigate to feed
-                                    }
+                                    Navigator.push(
+                                        context,
+                                        CupertinoPageRoute(
+                                            builder: (context) => Feed()));
                                   },
                                   child: Icon(Icons.arrow_forward_ios),
                                 ),

@@ -14,7 +14,7 @@ class MyApp extends StatelessWidget {
       title: 'Soundly',
       themeMode: ThemeMode.dark,
       theme: ThemeData(textTheme: TextTheme()),
-      home: Feed(),
+      home: AuthPage(),
     );
   }
 }
