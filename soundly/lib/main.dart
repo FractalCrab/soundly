@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:soundly/feed.dart';
+import 'package:soundly/auth.dart';
 
 void main() {
   runApp(MyApp());
@@ -11,8 +12,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Soundly',
-      
-      home: Feed(),
+      themeMode: ThemeMode.dark,
+      theme: ThemeData(textTheme: TextTheme()),
+      home: AuthPage(),
     );
   }
 }

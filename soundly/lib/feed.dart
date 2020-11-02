@@ -10,7 +10,7 @@ class _FeedState extends State<Feed> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(),
-      
+      backgroundColor: Colors.black87,
     );
   }
 }
