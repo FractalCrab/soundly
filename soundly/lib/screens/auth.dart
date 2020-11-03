@@ -78,67 +78,74 @@ class _LoginState extends State<Login> {
                         autovalidateMode: AutovalidateMode.always,
                         child: Center(
                           child: Column(
+                            mainAxisSize: MainAxisSize.min,
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              Container(
-                                width: MediaQuery.of(context).size.width / 4,
-                                padding: EdgeInsets.all(20),
-                                child: TextFormField(
-                                  onChanged: (str) {
-                                    getIfUsernameUnique(str);
-                                  },
-                                  validator: (str) {
-                                    if (str.length < 1) {
-                                      return "username cannot be empty";
-                                    } else if (!isUsernameUnique) {
-                                      return "username is not unique";
-                                    } else {
-                                      return null;
-                                    }
-                                  },
-                                  style: TextStyle(color: Colors.white),
-                                  cursorColor: Colors.white,
-                                  decoration: InputDecoration(
-                                      fillColor: Colors.white,
-                                      hintText: "u s e r n a m e",
-                                      hintStyle:
-                                          TextStyle(color: Colors.white)),
-                                  autocorrect: true,
+                              Flexible(
+                                child: Container(
+                                  width: MediaQuery.of(context).size.width / 4,
+                                  padding: EdgeInsets.all(10),
+                                  child: TextFormField(
+                                    onChanged: (str) {
+                                      getIfUsernameUnique(str);
+                                    },
+                                    validator: (str) {
+                                      if (str.length < 1) {
+                                        return "username cannot be empty";
+                                      } else if (!isUsernameUnique) {
+                                        return "username is not unique";
+                                      } else {
+                                        return null;
+                                      }
+                                    },
+                                    style: TextStyle(color: Colors.white),
+                                    cursorColor: Colors.white,
+                                    decoration: InputDecoration(
+                                        fillColor: Colors.white,
+                                        hintText: "u s e r n a m e",
+                                        hintStyle:
+                                            TextStyle(color: Colors.white)),
+                                    autocorrect: true,
+                                  ),
                                 ),
                               ),
-                              Container(
-                                padding: EdgeInsets.all(20),
-                                width: MediaQuery.of(context).size.width / 4,
-                                child: TextFormField(
-                                  validator: (str) {
-                                    if (str.length < 1) {
-                                      return "password cannot be empty";
-                                    } else if (str.length < 8) {
-                                      return "password should be 8 chars or more";
-                                    } else {
-                                      return null;
-                                    }
-                                  },
-                                  style: TextStyle(color: Colors.white),
-                                  obscureText: true,
-                                  decoration: InputDecoration(
-                                      hintText: "p a s s w o r d",
-                                      hintStyle:
-                                          TextStyle(color: Colors.white)),
-                                  autocorrect: true,
+                              Flexible(
+                                child: Container(
+                                  padding: EdgeInsets.all(10),
+                                  width: MediaQuery.of(context).size.width / 4,
+                                  child: TextFormField(
+                                    validator: (str) {
+                                      if (str.length < 1) {
+                                        return "password cannot be empty";
+                                      } else if (str.length < 8) {
+                                        return "password should be 8 chars or more";
+                                      } else {
+                                        return null;
+                                      }
+                                    },
+                                    style: TextStyle(color: Colors.white),
+                                    obscureText: true,
+                                    decoration: InputDecoration(
+                                        hintText: "p a s s w o r d",
+                                        hintStyle:
+                                            TextStyle(color: Colors.white)),
+                                    autocorrect: true,
+                                  ),
                                 ),
                               ),
-                              Container(
-                                child: FloatingActionButton(
-                                  backgroundColor: Colors.greenAccent,
-                                  onPressed: () {
-                                    Navigator.push(
-                                        context,
-                                        CupertinoPageRoute(
-                                            builder: (context) => Feed()));
-                                  },
-                                  child: Icon(Icons.arrow_forward_ios),
+                              Flexible(
+                                child: Container(
+                                  child: FloatingActionButton(
+                                    backgroundColor: Colors.greenAccent,
+                                    onPressed: () {
+                                      Navigator.push(
+                                          context,
+                                          CupertinoPageRoute(
+                                              builder: (context) => Feed()));
+                                    },
+                                    child: Icon(Icons.arrow_forward_ios),
+                                  ),
                                 ),
                               )
                             ],

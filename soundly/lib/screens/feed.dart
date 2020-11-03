@@ -1,5 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:soundly/screens/profile.dart';
 
 class Feed extends StatefulWidget {
   String authToken;
@@ -26,6 +28,20 @@ class _FeedState extends State<Feed> {
           textAlign: TextAlign.center,
           textScaleFactor: 1.5,
         ),
+        actions: [
+          Container(
+            padding: EdgeInsets.only(right: 50),
+            child: InkWell(
+              onTap: () {
+                Navigator.push(context,
+                    CupertinoPageRoute(builder: (context) => ProfilePage()));
+              },
+              child: CircleAvatar(
+                child: Icon(Icons.person),
+              ),
+            ),
+          )
+        ],
         centerTitle: true,
       ),
       backgroundColor: Colors.black,
@@ -36,7 +52,7 @@ class _FeedState extends State<Feed> {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Container(
-                padding: EdgeInsets.only(top: 5,bottom: 5),
+                padding: EdgeInsets.only(top: 5, bottom: 5),
                 child: CachedNetworkImage(
                   height: 100,
                   width: 200,
@@ -52,7 +68,8 @@ class _FeedState extends State<Feed> {
                     children: [
                       Center(
                         child: Container(
-                          padding: EdgeInsets.only(top:10,bottom: 10,right: 185),
+                          padding:
+                              EdgeInsets.only(top: 10, bottom: 10, right: 185),
                           child: InkWell(
                             child: CircleAvatar(
                                 child: Icon(
@@ -64,9 +81,8 @@ class _FeedState extends State<Feed> {
                       ),
                       Container(
                         width: 600,
-                       padding: EdgeInsets.only(right: 180),
+                        padding: EdgeInsets.only(right: 180),
                         child: LinearProgressIndicator(
-                          
                           backgroundColor: Colors.white,
                         ),
                       )
