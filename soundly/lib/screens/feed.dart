@@ -1,7 +1,10 @@
+import 'package:audioplayers/audioplayers.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:soundly/screens/profile.dart';
+
+import 'package:soundly/widgets/audioPost.dart';
 
 class Feed extends StatefulWidget {
   String authToken;
@@ -16,6 +19,54 @@ class _FeedState extends State<Feed> {
     // TODO: implement initState
     super.initState();
     this.authToken = widget.authToken;
+  }
+
+  AudioPlayer audioPlayer = AudioPlayer();
+  String currentUrl = "https://firebasestorage.googleapis.com/v0/b/soundly-c63fd.appspot.com/o/Pink%20Floyd%20-%20Comfortably%20numb.mp3?alt=media&token=6568635d-5ebf-490c-b14d-486cc81d0e65";
+  bool playing = false;
+  bool started = false;
+
+  void playAudioFromURL() async {
+    setState(() {
+      playing = true;
+    });
+    if (!started) {
+      setState(() {
+        started = true;
+      });
+    }
+    try {
+      int result = await audioPlayer.play(currentUrl, isLocal: false);
+      print(result);
+    } catch (e) {}
+  }
+
+  void resumeAudio() async {
+    setState(() {
+      playing = true;
+    });
+    try {
+      int result = await audioPlayer.resume();
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  void pauseAudio() async {
+    setState(() {
+      playing = false;
+    });
+    int result = await audioPlayer.pause();
+  }
+
+  void controlAudio() {
+    if (!started) {
+      playAudioFromURL();
+    } else if (playing) {
+      pauseAudio();
+    } else {
+      resumeAudio();
+    }
   }
 
   @override
@@ -71,9 +122,13 @@ class _FeedState extends State<Feed> {
                           padding:
                               EdgeInsets.only(top: 10, bottom: 10, right: 185),
                           child: InkWell(
+                            onTap: () async {
+                              //play pause audio
+                              controlAudio();
+                            },
                             child: CircleAvatar(
                                 child: Icon(
-                              Icons.play_arrow,
+                              playing ? Icons.pause : Icons.play_arrow,
                               size: 10,
                             )),
                           ),
@@ -98,44 +153,13 @@ class _FeedState extends State<Feed> {
           child: ListView.builder(
             itemCount: 100,
             itemBuilder: (context, index) {
-              return Center(
-                child: InkWell(
-                  onTap: () {},
-                  child: Container(
-                    padding: EdgeInsets.all(10),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Container(
-                          padding: EdgeInsets.all(10),
-                          child: CachedNetworkImage(
-                            imageUrl:
-                                "https://seeklogo.com/images/P/pink-floyd-logo-CE6D13EDCA-seeklogo.com.png",
-                          ),
-                        ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              "Title",
-                              style: TextStyle(color: Colors.white),
-                            ),
-                            Text(
-                              "Artist",
-                              style: TextStyle(color: Colors.white),
-                            ),
-                            Text(
-                              "4:30",
-                              style: TextStyle(color: Colors.white),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
+              return AudioPost(
+                onAuioPostTap: () {
+                  setState(() {
+                    started = false;
+                  });
+                  playAudioFromURL();
+                },
               );
             },
           ),
