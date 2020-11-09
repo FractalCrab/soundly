@@ -1,1 +1,1 @@
-web: gunicorn app:soundlyy
+web: gunicorn app:app --log-file -
