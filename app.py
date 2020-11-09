@@ -18,7 +18,7 @@ app = Flask(__name__)
 
 @app.route('/')
 def main():
-    return jsonify("Hello")
+    return jsonify("test")
 
 
 @app.route('/api/register', methods=['POST', 'GET'])
