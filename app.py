@@ -10,7 +10,6 @@ mycursor = mydb.cursor()
 
 mycursor.execute(
     "use heroku_0f834e948b2d904;")
-mycursor.execute("create table test2(id int);")
 
 
 
