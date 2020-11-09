@@ -1,1 +1,1 @@
-web: gunicorn soundly.wsgi --log-file -
+web: gunicorn app:soundlyy
