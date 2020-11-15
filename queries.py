@@ -1,5 +1,4 @@
-def select():
-    pass
+
 
 def parseQuery():
     pass

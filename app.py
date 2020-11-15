@@ -1,3 +1,4 @@
+from logging import exception
 from flask import Flask, jsonify, request
 import mysql.connector
 import random
@@ -19,20 +20,36 @@ app = Flask(__name__)
 def index():
     return "Soundly API"
 
+
+@app.route('/feed', methods=['POST', 'GET'])
+def getFeed():
+    try:
+        if request.form != None:
+            uid = request.form().get("uid")
+            mycursor.execute("select * from feed where uid="+uid)
+            data = mycursor.mycursor.fetchall()
+            return jsonify({"songs": data})
+
+        else:
+
+            return jsonify({"error": "uid not provided"})
+    except Exception as exception:
+        return jsonify({"error": str(exception)})
+
+
 @app.route('/register', methods=['POST', 'GET'])
 def register():
- 
-        if request.form != None:
 
-            username = request.form.get("username")
-            password = request.form.get("password")
-            id=random.randint(1,1000)
-            query = "insert into users values("+str(id),"user","pass"
-            mycursor.execute(query)
-            return jsonify("success")
-        else:
-            return jsonify("no data")
-        
+    if request.form != None:
+
+        username = request.form.get("username")
+        password = request.form.get("password")
+        id = random.randint(1, 1000)
+        query = "insert into users values("+str(id), "user", "pass"
+        mycursor.execute(query)
+        return jsonify("success")
+    else:
+        return jsonify("no data")
 
 
 @app.route('/login', methods=['POST', 'GET'])
