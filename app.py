@@ -2,16 +2,16 @@ from logging import exception
 from flask import Flask, jsonify, request
 import mysql.connector
 import random
+import queries
 mydb = mysql.connector.connect(
     host="us-cdbr-east-02.cleardb.net",
     user=" b7c1d59815aede",
     password="d1f287c2",
 )
-mycursor = mydb.cursor()
+mycursor = mydb.cursor(dictionary=True)
 
 mycursor.execute(
     "use heroku_0f834e948b2d904;")
-
 
 app = Flask(__name__)
 
@@ -21,40 +21,40 @@ def index():
     return "Soundly API"
 
 
-@app.route('/feed', methods=['POST', 'GET'])
-def getFeed():
+@app.route('/songs', methods=['POST', 'GET'])
+def getSongs():
     try:
-        if request.form != None:
-            uid = request.form().get("uid")
-            mycursor.execute("select * from feed where uid="+uid)
-            data = mycursor.mycursor.fetchall()
-            return jsonify({"songs": data})
 
-        else:
+        data = queries.select("song", mycursor)
+        return jsonify({data})
 
-            return jsonify({"error": "uid not provided"})
     except Exception as exception:
         return jsonify({"error": str(exception)})
 
 
-@app.route('/register', methods=['POST', 'GET'])
-def register():
-
-    if request.form != None:
-
-        username = request.form.get("username")
-        password = request.form.get("password")
-        id = random.randint(1, 1000)
-        query = "insert into users values("+str(id), "user", "pass"
-        mycursor.execute(query)
-        return jsonify("success")
-    else:
-        return jsonify("no data")
-
-
 @app.route('/login', methods=['POST', 'GET'])
-def test():
-    return jsonify(request.form.to_dict())
+def login():
+
+    try:
+        if(request.form != None):
+            uid = request.form.get("uid")
+            password = request.form.get("password")
+            data = queries.selectWhere("user_info", mycursor, "User_ID="+uid)
+            if(len(data) == 0):
+                return jsonify({"success": False, "error": "auth invalid"})
+            else:
+                user = data[0]
+                if user["Password"] == password:
+
+                    return jsonify({"success": True})
+                else:
+                    return jsonify({"success": False, "error": "auth invalid"})
+
+        else:
+            return jsonify({"success": False, "error": "auth invalid"})
+
+    except Exception as exception:
+        return jsonify({"success": False, "error": str(exception)})
 
 
 if __name__ == '__main__':
