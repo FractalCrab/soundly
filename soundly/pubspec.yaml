@@ -32,6 +32,8 @@ dependencies:
   audioplayers: ^0.16.2
   http: ^0.12.2
   firebase: ^7.3.3
+ 
+  fluttertoast: ^7.1.5
   file_picker: ^2.1.1
 
 dev_dependencies:

@@ -94,13 +94,13 @@ class _LoginState extends State<Login> {
                                       getIfUsernameUnique(str);
                                     },
                                     validator: (str) {
-                                      if (str.length < 1) {
-                                        return "username cannot be empty";
-                                      } else if (!isUsernameUnique) {
-                                        return "username is not unique";
-                                      } else {
-                                        return null;
-                                      }
+                                      // if (str.length < 1) {
+                                      //   return "username cannot be empty";
+                                      // } else if (!isUsernameUnique) {
+                                      //   return "username is not unique";
+                                      // } else {
+                                      //   return null;
+                                      // }
                                     },
                                     style: TextStyle(color: Colors.white),
                                     cursorColor: Colors.white,
@@ -122,13 +122,13 @@ class _LoginState extends State<Login> {
                                       password = str;
                                     },
                                     validator: (str) {
-                                      if (str.length < 1) {
-                                        return "password cannot be empty";
-                                      } else if (str.length < 8) {
-                                        return "password should be 8 chars or more";
-                                      } else {
-                                        return null;
-                                      }
+                                      // if (str.length < 1) {
+                                      //   return "password cannot be empty";
+                                      // } else if (str.length < 8) {
+                                      //   return "password should be 8 chars or more";
+                                      // } else {
+                                      //   return null;
+                                      // }
                                     },
                                     style: TextStyle(color: Colors.white),
                                     obscureText: true,
@@ -145,10 +145,11 @@ class _LoginState extends State<Login> {
                                   child: FloatingActionButton(
                                     backgroundColor: Colors.greenAccent,
                                     onPressed: () async {
-                                      dynamic loginSuccess = await loginAPI(username, password);
-                                    //  dynamic loginSuccess=true;
+                                      dynamic loginSuccess =
+                                          await loginAPI(username, password);
+                                      //  dynamic loginSuccess=true;
                                       if (loginSuccess) {
-                                        Navigator.push(
+                                        Navigator.pushReplacement(
                                             context,
                                             CupertinoPageRoute(
                                                 builder: (context) => Feed()));
