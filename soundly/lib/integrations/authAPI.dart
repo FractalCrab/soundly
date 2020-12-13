@@ -9,12 +9,12 @@ Future<dynamic> loginAPI(String username, String pass) async {
     String url = baseAPIURL + "login";
 
     Response response =
-        await get(url, headers: {"username": "test", "password": "pass"});
-    print(response.statusCode);
+        await post(url, body: {"username": username, "password": pass});
+    print(response.body);
     if (response.statusCode == 200) {
       String responseBodyStr = response.body;
-      Map<String,dynamic> responseBody = jsonDecode(response.body);
-      print(responseBody["success"]);
+      Map<String, dynamic> responseBody = jsonDecode(responseBodyStr);
+      print(responseBody);
       if (responseBody["success"]) {
         return true;
       } else {
