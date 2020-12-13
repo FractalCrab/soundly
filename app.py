@@ -120,28 +120,82 @@ def register():
 #
 
 
-@app.route('/feed')
-def home():
-    # Check if user is loggedin
-    if 'loggedin' in session:
-        # User is loggedin show them the profile page
-        return "Soundly"
-    # User is not loggedin redirect to login page
-    return redirect(url_for('login'))
+# @app.route('/feed')
+# def home():
+#     # Check if user is loggedin
+#     if 'loggedin' in session:
+#         # User is loggedin show them the profile page
+#         return "Soundly"
+#     # User is not loggedin redirect to login page
+#     return redirect(url_for('login'))
 
 
-@app.route('/feed')
-def profile():
-    # Check if user is loggedin
+# @app.route('/feed')
+# def profile():
+#     # Check if user is loggedin
+#     if 'loggedin' in session:
+#         # to be done
+#         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+#         cursor.execute('SELECT * FROM user WHERE id = %s', (session['id'],))
+#         user = cursor.fetchone()
+#         # Show the profile page with user info
+#         return "to be added"
+#     # User is not loggedin redirect to login page
+#     return redirect(url_for('login'))
+
+#------------- song routes-------------
+#adding songs
+@app.route('/song',methods=['POST'])
+def song():
     if 'loggedin' in session:
-        # to be done
+        artist_id = session['id']
+        _json = request.get_json()
+        # print(_json)
+        #recieve json data 
+        trackname = _json['trackname']
+        trackpath    = _json['trackpath']
+      #add song with artist id of user
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-        cursor.execute('SELECT * FROM user WHERE id = %s', (session['id'],))
-        user = cursor.fetchone()
-        # Show the profile page with user info
-        return "to be added"
-    # User is not loggedin redirect to login page
-    return redirect(url_for('login'))
+        cursor.execute('SELECT * FROM songs ')
+        cursor.execute('INSERT INTO songs VALUES (NULL, %s, %s, %s)', (artist_id, trackname,trackpath))
+        mysql.connection.commit()
+        # song = cursor.fetchone()
+        # print(song)
+        # return song info to be added
+        return "song added"
+    return "none"
+
+
+# retrieve song for particular user
+@app.route('/track',methods=['GET'])
+def track():
+    if 'loggedin' in session:
+        artist_id = session['id']
+        # conn= 
+        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        cursor.execute('SELECT * FROM songs WHERE artist_id = %s', (artist_id,))
+        usertracks = []
+
+        for row in cursor:
+            usertracks.append(row)
+            print(row)
+        return jsonify(usertracks)
+# GET track returns for artist_id 41
+# [
+#     {
+#         "artist_id": 41,
+#         "id": 1,
+#         "trackname": "firstsong",
+#         "trackpath": "urllllllllllllllllll"
+#     },
+#     {
+#         "artist_id": 41,
+#         "id": 31,
+#         "trackname": "firtsong",
+#         "trackpath": "urllllllllllllll"
+#     }
+# ]
+
 
 
 @app.route('/logout', methods=['GET'])
