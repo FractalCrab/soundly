@@ -6,12 +6,15 @@ import 'package:soundly/misc.dart';
 
 Future<dynamic> loginAPI(String username, String pass) async {
   try {
-    String url = baseAPIURL+"login";
-    
-    Response response =await get(url,headers: {"username":"test","password":"pass"});
+    String url = baseAPIURL + "login";
+
+    Response response =
+        await get(url, headers: {"username": "test", "password": "pass"});
     print(response.statusCode);
     if (response.statusCode == 200) {
-      Map responseBody = jsonDecode(response.body);
+      String responseBodyStr = response.body;
+      Map<String,dynamic> responseBody = jsonDecode(response.body);
+      print(responseBody["success"]);
       if (responseBody["success"]) {
         return true;
       } else {

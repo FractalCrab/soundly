@@ -1,7 +1,14 @@
+import 'dart:io';
+
 import 'package:audioplayers/audioplayers.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:file_picker/file_picker.dart';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
+import 'package:soundly/integrations/firebaseStorage.dart';
+import 'package:soundly/models/song.dart';
 import 'package:soundly/screens/profile.dart';
 
 import 'package:soundly/widgets/audioPost.dart';
@@ -14,6 +21,7 @@ class Feed extends StatefulWidget {
 
 class _FeedState extends State<Feed> {
   String authToken;
+  bool addButtonHover = false;
   @override
   void initState() {
     // TODO: implement initState
@@ -22,10 +30,12 @@ class _FeedState extends State<Feed> {
   }
 
   AudioPlayer audioPlayer = AudioPlayer();
-  String currentUrl = "https://firebasestorage.googleapis.com/v0/b/soundly-c63fd.appspot.com/o/Pink%20Floyd%20-%20Comfortably%20numb.mp3?alt=media&token=6568635d-5ebf-490c-b14d-486cc81d0e65";
+  String currentUrl =
+      "https://firebasestorage.googleapis.com/v0/b/soundly-c63fd.appspot.com/o/Pink%20Floyd%20-%20Comfortably%20numb.mp3?alt=media&token=6568635d-5ebf-490c-b14d-486cc81d0e65";
   bool playing = false;
   bool started = false;
-
+  dynamic addAudioFormKey = GlobalKey<FormState>();
+  Song newSong = Song();
   void playAudioFromURL() async {
     setState(() {
       playing = true;
@@ -69,10 +79,27 @@ class _FeedState extends State<Feed> {
     }
   }
 
+  void pickFile() async {
+    try {
+      FilePickerResult result = await FilePicker.platform.pickFiles();
+
+      if (result != null) {
+        File file = File(result.files.single.path);
+        newSong.songFile = file;
+      } else {
+        // User canceled the picker
+      }
+    } catch (e) {
+      print(e);
+    }
+// show a dialog to open a file
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: Container(),
         backgroundColor: Colors.black,
         title: Text(
           "Feed",
@@ -96,6 +123,69 @@ class _FeedState extends State<Feed> {
         centerTitle: true,
       ),
       backgroundColor: Colors.black,
+      floatingActionButton: FloatingActionButton(
+        child: InkWell(
+          child: Icon(Icons.add),
+          onHover: (bool) {
+            setState(() {
+              addButtonHover = true;
+            });
+          },
+          onTap: () {
+            newSong = Song();
+            showCupertinoDialog(
+                context: context,
+                barrierDismissible: true,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                      backgroundColor: Colors.white,
+                      title: Text("Add an Audio File"),
+                      content: Container(
+                          height: MediaQuery.of(context).size.height / 2,
+                          width: MediaQuery.of(context).size.width / 2,
+                          child: Form(
+                            key: addAudioFormKey,
+                            child: Column(
+                              children: [
+                                Container(
+                                    padding: EdgeInsets.all(10),
+                                    child: TextField(
+                                      autocorrect: true,
+                                      onChanged: (str) {
+                                        newSong.title = str;
+                                      },
+                                    )),
+                                FloatingActionButton(
+                                  child: Icon(Icons.add),
+                                  onPressed: () async {
+                                    try {
+                                      pickFile();
+                                    } catch (e) {
+                                      print(e);
+                                    }
+                                  },
+                                ),
+                                InkWell(
+                                  onTap: () async {
+                                    if (addAudioFormKey.currentState
+                                        .validate()) {
+                                      uploadAudioFile(
+                                          "1", newSong.title, newSong.songFile);
+                                    }
+                                  },
+                                  child: Container(
+                                      child: Card(
+                                    child: Text("Submit"),
+                                  )),
+                                )
+                              ],
+                            ),
+                          )));
+                });
+          },
+        ),
+        onPressed: () {},
+      ),
       bottomNavigationBar: Container(
           height: 100,
           color: Colors.grey[900],

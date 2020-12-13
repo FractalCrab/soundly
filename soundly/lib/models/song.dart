@@ -4,4 +4,5 @@ class Song {
   String title;
   String genre;
   String songPath;
+  dynamic songFile;
 }

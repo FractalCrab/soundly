@@ -31,6 +31,8 @@ dependencies:
   cached_network_image: ^2.3.3
   audioplayers: ^0.16.2
   http: ^0.12.2
+  firebase: ^7.3.3
+  file_picker: ^2.1.1
 
 dev_dependencies:
   flutter_test:
