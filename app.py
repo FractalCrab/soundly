@@ -1,7 +1,11 @@
-from flask import Flask, render_template, request, redirect, url_for, session
-from flask_mysqldb import MySQL
-import MySQLdb.cursors
+from flask import Flask, request, redirect, jsonify, url_for, session
+from flask import json
+from flask.helpers import make_response
+from flask_mysqldb import MySQL, MySQLdb
+import pymysql
+import requests
 import re
+
 
 app = Flask(__name__)
 
@@ -9,28 +13,36 @@ app.secret_key = 'secret'
 
 app.config['MYSQL_HOST'] = 'us-cdbr-east-02.cleardb.com'
 app.config['MYSQL_USER'] = 'b7c1d59815aede'
-app.config['MYSQL_PASSWORD'] = 'd1f287c2' 
-app.config['MYSQL_DB'] = 'heroku_0f834e948b2d904' 
+app.config['MYSQL_PASSWORD'] = 'd1f287c2'
+app.config['MYSQL_DB'] = 'heroku_0f834e948b2d904'
 app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
 mysql = MySQL(app)
 
 
+@app.route('/', methods=['GET', 'POST'])
+def index():
+    response = make_response(
+        "Soundly Base API",
+        200,
+    )
+    return response
 
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     # Output message if something goes wrong...
-    msg = ''
+
     # Check if "username" and "password" POST requests exist (user submitted form)
     if request.method == 'POST':
         # Create variables for easy access
-        _json = request.get_json()
+        _json = request.form
         # print(_json)
         username = _json['username']
         password = _json['password']
         # Check if user exists using MySQL
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-        cursor.execute('SELECT * FROM user WHERE username = %s AND password = %s', (username, password,))
+        cursor.execute(
+            'SELECT * FROM user WHERE username = %s AND password = %s', (username, password,))
         # Fetch one record and return result
         user = cursor.fetchone()
         # If user exists in users table in out database
@@ -41,29 +53,43 @@ def login():
             session['username'] = user['username']
             # Redirect to song list
             # return url_for()
-            return 'Logged in successfully!'
+
+            response = make_response(
+                "Logged in successfully!",
+                200,
+            )
+            return response
         else:
-            # user doesnt exist or username/password incorrect
-            msg = 'Incorrect username/password!'
-    # 
-    return redirect(url_for('register'))
+
+            response = make_response(
+                'Incorrect username/password!',
+                201,
+            )
+            return response
+    else:
+        response = make_response(
+            'Empty auth credentials',
+            404,
+        )
+        return response
 
 
-@app.route('/register', methods=['GET', 'POST'])
+@app.route('/register', methods=[ 'POST'])
 def register():
     # Check if "username", "password" and "email" POST requests exist (user submitted form)
     if request.method == 'POST':
         # Create variables for easy access
-        _json = request.get_json()
+        _json = request.form
         # print(_json)
         username = _json['username']
         password = _json['password']
-        email    = _json['email']
-        name     =_json['name']
+        email = _json['email']
+        name = _json['name']
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
         cursor.execute('SELECT * FROM user WHERE username = %s', (username,))
         user = cursor.fetchone()
         # If user exists show error and validation checks
+        code = 201
         if user:
             msg = 'user already exists!'
         elif not re.match(r'[^@]+@[^@]+\.[^@]+', email):
@@ -74,18 +100,26 @@ def register():
             msg = 'Please fill out the form!'
         else:
             # user doesnt exists and the form data is valid, now insert new user into users table
-            cursor.execute('INSERT INTO user VALUES (NULL, %s, %s, %s,%s)', (username, password,name, email,))
+            cursor.execute('INSERT INTO user VALUES (NULL, %s, %s, %s,%s)',
+                           (username, password, name, email,))
             mysql.connection.commit()
-            return "register success redirect(url_for('login')) "
-        # cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-
-        # cursor.execute('INSERT INTO user VALUES (NULL, %s, %s, %s,%s)', (username, password,name, email,))
-        # mysql.connection.commit()
-        # return "login succes redirect(url_for('login')) "
-    # not registered
-    return msg
+            code = 200
+            msg = "register success  "
+        response = make_response(
+            msg,
+            code,
+        )
+        return response
+    else:
+        response = make_response(
+            "Request not found",
+            404,
+        )
+        return response
     # return redirect(url_for('register'))
 #
+
+
 @app.route('/feed')
 def home():
     # Check if user is loggedin
@@ -100,7 +134,7 @@ def home():
 def profile():
     # Check if user is loggedin
     if 'loggedin' in session:
-        #to be done
+        # to be done
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
         cursor.execute('SELECT * FROM user WHERE id = %s', (session['id'],))
         user = cursor.fetchone()
@@ -110,8 +144,7 @@ def profile():
     return redirect(url_for('login'))
 
 
-
-@app.route('/logout',methods=['GET'])
+@app.route('/logout', methods=['GET'])
 def logout():
     # Remove session data, this will log the user out
     if 'loggedin' in session:
@@ -122,6 +155,8 @@ def logout():
         return redirect(url_for('login'))
     else:
         return "redirect(url_for('login'))"
+
+
     # return "redirect(url_for('login'))"
 if __name__ == "__main__":
     app.run()
