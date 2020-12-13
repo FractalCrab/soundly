@@ -36,23 +36,22 @@ def getSongs():
 def login():
 
     try:
-        if(request.headers != None):
+       
             
-            uid = request.headers.get("username")
-            password = request.headers.get("password")
-            data = queries.selectWhere("user_info", mycursor, "User_ID="+uid)
-            if(len(data) == 0):
-                return jsonify({"success": False, "error": "auth invalid"})
-            else:
-                user = data[0]
-                if user["Password"] == password:
-
-                    return jsonify({"success": True})
-                else:
-                    return jsonify({"success": False, "error": "auth invalid"})
-
-        else:
+        uid = request.headers.get("username")
+        password = request.headers.get("password")
+        data = queries.selectWhere("user_info", mycursor, "User_ID="+uid)
+        if(len(data) == 0):
             return jsonify({"success": False, "error": "auth invalid"})
+        else:
+            user = data[0]
+            if user["Password"] == password:
+
+                return jsonify({"success": True})
+            else:
+                return jsonify({"success": False, "error": "auth invalid"})
+
+       
 
     except Exception as exception:
         return jsonify({"success": False, "error": str(exception)})
