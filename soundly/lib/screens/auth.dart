@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:soundly/integrations/authAPI.dart';
 import 'package:soundly/screens/feed.dart';
 
 class AuthPage extends StatefulWidget {
@@ -38,6 +39,7 @@ class Login extends StatefulWidget {
 class _LoginState extends State<Login> {
   final formKey = GlobalKey<FormState>();
   bool isUsernameUnique = true;
+  String username, password;
   Future<bool> getIfUsernameUnique(String uname) async {
     setState(() {
       isUsernameUnique = false;
@@ -88,6 +90,7 @@ class _LoginState extends State<Login> {
                                   padding: EdgeInsets.all(10),
                                   child: TextFormField(
                                     onChanged: (str) {
+                                      username = str;
                                       getIfUsernameUnique(str);
                                     },
                                     validator: (str) {
@@ -115,6 +118,9 @@ class _LoginState extends State<Login> {
                                   padding: EdgeInsets.all(10),
                                   width: MediaQuery.of(context).size.width / 4,
                                   child: TextFormField(
+                                    onChanged: (str) {
+                                      password = str;
+                                    },
                                     validator: (str) {
                                       if (str.length < 1) {
                                         return "password cannot be empty";
@@ -138,11 +144,16 @@ class _LoginState extends State<Login> {
                                 child: Container(
                                   child: FloatingActionButton(
                                     backgroundColor: Colors.greenAccent,
-                                    onPressed: () {
-                                      Navigator.push(
-                                          context,
-                                          CupertinoPageRoute(
-                                              builder: (context) => Feed()));
+                                    onPressed: () async {
+                                      dynamic loginSuccess =
+                                          await loginAPI(username, password);
+
+                                      if (loginSuccess) {
+                                        Navigator.push(
+                                            context,
+                                            CupertinoPageRoute(
+                                                builder: (context) => Feed()));
+                                      }
                                     },
                                     child: Icon(Icons.arrow_forward_ios),
                                   ),

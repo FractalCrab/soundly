@@ -32,13 +32,14 @@ def getSongs():
         return jsonify({"error": str(exception)})
 
 
-@app.route('/login', methods=['POST', 'GET'])
+@app.route('/login', methods=['GET'])
 def login():
 
     try:
-        if(request.form != None):
-            uid = request.form.get("uid")
-            password = request.form.get("password")
+        if(request.headers != None):
+            
+            uid = request.headers.get("username")
+            password = request.headers.get("password")
             data = queries.selectWhere("user_info", mycursor, "User_ID="+uid)
             if(len(data) == 0):
                 return jsonify({"success": False, "error": "auth invalid"})

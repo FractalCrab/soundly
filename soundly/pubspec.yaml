@@ -30,6 +30,7 @@ dependencies:
   cupertino_icons: ^1.0.0
   cached_network_image: ^2.3.3
   audioplayers: ^0.16.2
+  http: ^0.12.2
 
 dev_dependencies:
   flutter_test:
