@@ -18,7 +18,10 @@ app = Flask(__name__)
 
 @app.route('/', methods=['POST', 'GET'])
 def index():
-    return "Soundly API"
+    return app.response_class(status=200,response="Test")
+        
+
+    
 
 
 @app.route('/songs', methods=['POST', 'GET'])

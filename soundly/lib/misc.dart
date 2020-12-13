@@ -1,1 +1,1 @@
-String baseAPIURL = "https://soundlyy.herokuapp.com/";
+String baseAPIURL = "https://cors-anywhere.herokuapp.com/https://soundlyy.herokuapp.com/";
