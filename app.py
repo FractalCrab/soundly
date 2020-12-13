@@ -1,64 +1,122 @@
-from logging import exception
-from flask import Flask, jsonify, request
+from flask import Flask, request, redirect,jsonify, url_for, session
+from flask import json
+from flask_mysqldb import MySQL,MySQLdb
+import pymysql
+import requests
+from flask_mysqldb import MySQL
 import mysql.connector
-import random
-import queries
-mydb = mysql.connector.connect(
-    host="us-cdbr-east-02.cleardb.net",
-    user=" b7c1d59815aede",
-    password="d1f287c2",
-)
-mycursor = mydb.cursor(dictionary=True)
-
-mycursor.execute(
-    "use heroku_0f834e948b2d904;")
-
+from mysql.connector import (connection)
 app = Flask(__name__)
 
+app.config['MYSQL_HOST'] = 'us-cdbr-east-02.cleardb.com'
+app.config['MYSQL_USER'] = 'b7c1d59815aede'
+app.config['MYSQL_PASSWORD'] = 'd1f287c2' 
+app.config['MYSQL_DB'] = 'heroku_0f834e948b2d904' 
+app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
+mysql = MySQL(app)
 
-@app.route('/', methods=['POST', 'GET'])
-def index():
-    return app.response_class(status=200,response="Test")
-        
-
-    
-
-
-@app.route('/songs', methods=['POST', 'GET'])
-def getSongs():
-    try:
-
-        data = queries.select("song", mycursor)
-        return jsonify({data})
-
-    except Exception as exception:
-        return jsonify({"error": str(exception)})
+# @app.route('/')
+# def hello():
+#     usernamexyz="usernamexyz"
+#     curl = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+#     curl.execute("SELECT * FROM user WHERE username=%s",(usernamexyz,))
+#     user = curl.fetchone()
+#     print(user["password"])
 
 
-@app.route('/login', methods=['GET'])
+@app.route('/')
+def home():
+	if 'username' in session:
+		username = session['username']
+		return jsonify({'message' : 'You are already logged in', 'username' : username})
+	else:
+		resp = jsonify({'message' : 'register'})
+		resp.status_code = 401
+		return resp
+
+@app.route('/login',methods=["GET","POST"])
 def login():
+    if request.method == 'POST':
+        _json = request.get_json()
+        print(_json)
+        username = _json['username']
+        password = _json['password']
+        print("form "+password)
+        try:
+                curl = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+                curl.execute("SELECT * FROM user WHERE username=%s",(username,))
+                user = curl.fetchone()
+                # print (user)
+                curl.close()
+                print("user"+user["password"])
+                # print(len(user))
+                print(user)
+                if (password == user["password"]):
+                    session['name'] = user['name']
+                    session['username'] = user['username']
+                    return jsonify({'message' : 'logedin success'})
+                else:
+                        return "Error passowrd didnt match"
+        except Exception as e:
+                return jsonify({'message' : 'error'})
+    else:
+        return jsonify({'message' : 'please login'})
 
-    try:
-       
-            
-        uid = request.headers.get("username")
-        password = request.headers.get("password")
-        data = queries.selectWhere("user_info", mycursor, "User_ID="+uid)
-        if(len(data) == 0):
-            return jsonify({"success": False, "error": "auth invalid"})
-        else:
-            user = data[0]
-            if user["Password"] == password:
+# @app.route('/login', methods=['POST'])
+# def login():
+# 	conn = None;
+# 	cursor = None;
+	
+# 	try:
+# 		_json = request.json
+# 		_username = _json['username']
+# 		_password = _json['password']
+		
+# 		# validate the received values
+# 		if _username and _password:
+# 			#check user exists			
+# 			conn =  mysql.connection
+# 			cursor = conn.cursor()
+			
+# 			sql = "SELECT * FROM user WHERE username=%s"
+# 			sql_where = (_username,)
+			
+# 			cursor.execute(sql, sql_where)
+# 			row = cursor.fetchone()
+# 			print(row[2])
+# 			# if row:
+# 			# 	if (password == user["password"]):
+# 			# 		session['username'] = row[1]
+# 			# 		#cursor.close()
+# 			# 		#conn.close()
+# 			# 		return jsonify({'message' : 'You are logged in successfully'})
+# 			# 	else:
+# 			# 		resp = jsonify({'message' : 'Bad Request - invalid password'})
+# 			# 		resp.status_code = 400
+# 			# 		return resp
+# 		else:
+# 			resp = jsonify({'message' : 'Bad Request - invalid credendtials'})
+# 			resp.status_code = 400
+# 			return resp
 
-                return jsonify({"success": True})
-            else:
-                return jsonify({"success": False, "error": "auth invalid"})
+	# except Exception as e:
+	# 	print(e)
 
-       
+	# finally:
+	# 	if cursor and conn:
+	# 		cursor.close()
+	# 		conn.close()
 
-    except Exception as exception:
-        return jsonify({"success": False, "error": str(exception)})
 
 
-if __name__ == '__main__':
-    app.run(debug=True)
+# def logout():
+#     session.clear()
+#     return redirect('/login')
+@app.route('/logout', methods=["GET", "POST"])
+def logout():
+	if 'username' in session:
+		session.pop('username', None)
+	return jsonify({'message' : 'You successfully logged out'})
+
+if __name__ == "__main__":
+    app.run(port=5001)
